@@ -4958,11 +4958,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/ttimmatti/proga/cs/webapi/webapi.csproj",
+      "projectUniqueName": "/home/ttimmatti/proga/cs/smartWalletsFilter_API/webapi.csproj",
       "projectName": "webapi",
-      "projectPath": "/home/ttimmatti/proga/cs/webapi/webapi.csproj",
+      "projectPath": "/home/ttimmatti/proga/cs/smartWalletsFilter_API/webapi.csproj",
       "packagesPath": "/home/ttimmatti/.nuget/packages/",
-      "outputPath": "/home/ttimmatti/proga/cs/webapi/obj/",
+      "outputPath": "/home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/ttimmatti/.nuget/NuGet/NuGet.Config"

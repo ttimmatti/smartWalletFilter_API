@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MzTJ1NmGG6YV7tE08PjZIXgn3rGhBEntP43noKnc4FKFlN5rYjTu0ucva6XcfmnP610rxWVEUuZjz606uQelWQ==",
+  "dgSpecHash": "NyQMJ8iwHbeJgQZHNnPDZi2f0PyqxgRsTia0BoE5/Ijm/r8jSu79OwhAiydd117JCup/NQCRctuNrfzp8fFcTQ==",
   "success": true,
-  "projectFilePath": "/home/ttimmatti/proga/cs/webapi/webapi.csproj",
+  "projectFilePath": "/home/ttimmatti/proga/cs/smartWalletsFilter_API/webapi.csproj",
   "expectedPackageFiles": [
     "/home/ttimmatti/.nuget/packages/csvhelper/30.0.1/csvhelper.30.0.1.nupkg.sha512",
     "/home/ttimmatti/.nuget/packages/dotnetenv/2.3.0/dotnetenv.2.3.0.nupkg.sha512",

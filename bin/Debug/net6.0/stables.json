@@ -1,0 +1,30 @@
+[
+    {
+        "network": "Matic",
+        "stables":
+        [
+            {
+                "name": "USDT",
+                "contract": "0x124323142342"
+            },
+            {
+                "name": "DAI",
+                "contract": "0x12432312313123"
+            }
+        ]
+    },
+    {
+        "network": "BSC",
+        "stables":
+        [
+            {
+                "name": "USDT",
+                "contract": "0x1242342344634"
+            },
+            {
+                "name": "DAI",
+                "contract": "0x134652653fdg34"
+            }
+        ]
+    }
+]

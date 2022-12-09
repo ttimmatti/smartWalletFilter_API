@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Ethereum",
+        "api": "https://api.etherscan.io/api",
+        "key": "PFRGMA368NFVCKMDZ1NP1Z3HJEI1QY95SG"
+    },
+    {
+        "name": "Polygon",
+        "api": "https://api.polygonscan.com/api",
+        "key": "2K9Q3ZZVCTCZQXPX2YY4PGTXCCZVZKMTD5"
+    },
+    {
+        "name": "BSC",
+        "api": "https://api.bscscan.com/api",
+        "key": "1UY1JIN9NFH81TZZFHNM66YGCHN9V9VVGY"
+    },
+    {
+        "name": "Optimism",
+        "api": "https://api-optimistic.etherscan.io/api",
+        "key": "MWJPHHTJFS5SEQC9Y6PW4U686SS4AMUSER"
+    },
+    {
+        "name": "Arbitrum",
+        "api": "https://api.arbiscan.io/api",
+        "key": "WCZ3EFYGD1R5M1JWYF8WXQP7M54D45GDBS"
+    }
+]
