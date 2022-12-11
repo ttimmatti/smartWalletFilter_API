@@ -1,6 +1,6 @@
 [
     {
-        "network": "Matic",
+        "network": "Polygon",
         "stables":
         [
             {
@@ -9,7 +9,7 @@
             },
             {
                 "name": "DAI",
-                "contract": "0x12432312313123"
+                "contract": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
             }
         ]
     },

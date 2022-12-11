@@ -33,7 +33,7 @@ class Program
             app.Run();
         }
 
-        SmartWallets.Get(File.ReadAllText("here.csv"), 1000, 5, 1000, "");
+        SmartWallets.Get(File.ReadAllText("here.csv"), 10000, 5, 1000, "", "true");
     }
 }
 
@@ -43,7 +43,7 @@ class Maps
     {
         //?balance=10000&txs=5&minswap=1000&token=<token address>
         app.MapPut("/upload",
-            async (HttpRequest request, int? balance, int? txs, int? minswap, string? token) =>
+            async (HttpRequest request, int? balance, int? txs, int? minswap, string? token, string? buyonly) =>
             {
                 string fileContent = "";
                 using (var reader = new StreamReader(request.Body, System.Text.Encoding.UTF8))
@@ -52,10 +52,10 @@ class Maps
                     fileContent = await reader.ReadToEndAsync();
                 }    
                 // Do something with `fileContent`...
-                SmartWallets.Get(fileContent, balance, txs, minswap, token);
+                SmartWallets.Get(fileContent, balance, txs, minswap, token, buyonly);
         
                 //return "File Was Processed Sucessfully!";
-                return SmartWallets.Get(fileContent, balance, txs, minswap, token);
+                return SmartWallets.Get(fileContent, balance, txs, minswap, token, buyonly);
             }
         ).Accepts<IFormFile>("json"); //NEED TO CLARIFY HOW THIS WORKS
 
@@ -65,15 +65,16 @@ class Maps
 
 class SmartWallets
 {
-    public static string Get(string csv, int? balance, int? numOfTxs, int? minSwap, string token)
+    public static string Get(string csv, int? balance, int? numOfTxs, int? minSwap, string token, string buyonly)
     {
         //if value is null then we assign it its default value
         balance = balance??10000; numOfTxs = numOfTxs??5; minSwap = minSwap??1000; token = token??"";
+        buyonly = buyonly??"false";
 
         //load networks
 
         //csv to list of TXs
-        IList<Tx> list = Data.CsvToListOfTXs(csv);
+        List<Tx> list = Data.CsvToListOfTXs(csv);
         //filter for duplicates by txhash
         //list = list.GroupBy(el => el.Txhash).Select(el => el.First()).ToList<Tx>();
 
@@ -93,29 +94,40 @@ class SmartWallets
 
         //determine the network
         //What if the Api is down!!!
-        Explorer.DetermineNetwork(list);
+
+        string network = Explorer.DetermineNetwork(list);
+        Console.WriteLine(network); //REMOVE FOR PRODUCTION!!!!!!!!!!!!!!!!!!!!!!!
 
         //1. SWAP VALUE > minSwap|1000$
         // check for stables vs 1000
         // need to hardcode:
         // chain native tokens(5) and wrapped(5) and natives in the network, stables(usdt,busd,dai,usdn etc)
         //
-        //list = list.Where(x => double.Parse(x.USDValueDayOfTx) >= minSwap).ToList<Tx>();
-        IList<string> walletsList = new List<string>();
+        list = Data.FilterTxWithLessThanMinswap(list, network, minSwap);
+        //now we need to implement solution for
+        //1. buyonly included
+        //2. tokenfilter included
 
-        // int j = 0;
-        // for (int i = 0; i < list.GroupBy(x => x.ContractAddress).Count(); i++)
-        // {
-        //     while (list.ElementAt(j).ContractAddress == list.ElementAt(i).ContractAddress)
-        //     {
-        //         //if ()
+        //buyonly section: to filter buyonly txs we need to be sure that in the last action
+        // of the trnsaction the sender of the transaction receives That token, which we are working with
+        //        
+        //!!! So, if buyonly is true, than we also need tokenContract to be specified.
+        // Or we can try to guess it, based on the statistics...
+        if (buyonly == "true")
+        {
+            //first we need to find out which token are we working with
+            // my plan is to choose a token that is not a stable and is
+            // met most frequently +
+            string tokenContract = Data.DetermineTokenContract(list, network);
 
-        //         j++;
-        //     }
-        // }
-        //
-        //
-        //
+            list = list.FilterBuyOnly(list, tokenContract);
+        }
+        //      IList<string> walletsList = new List<string>();
+
+        
+        
+        
+        
 
 
 
@@ -131,7 +143,7 @@ class SmartWallets
 
 class Data
 {
-    public static IList<Tx> CsvToListOfTXs(string text)
+    public static List<Tx> CsvToListOfTXs(string text)
     {
         var reader = new StringReader(text);
         var csv = new CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
@@ -140,13 +152,140 @@ class Data
 
         for (int i = 0; i < records.Count(); i++)
         {
-            string txUsd = records.ElementAt(i).USDValueDayOfTx;
-            if (txUsd.IndexOf(",") != -1)
-                records.ElementAt(i).USDValueDayOfTx = txUsd.Remove(txUsd.IndexOf(","), 1);
+            string txTokenValue = records.ElementAt(i).TokenValue;
+            if (txTokenValue.IndexOf(",") != -1)
+                records.ElementAt(i).TokenValue = txTokenValue.Remove(txTokenValue.IndexOf(","), 1);
         }
 
         return records;
     }
+
+    public static List<Tx> FilterTxWithLessThanMinswap(List<Tx> list, string networkForStables,
+            int? minSwap)
+    {
+        string[] stablesContractsInTheNetwork = AllStablesInNetworks.ArrayContractsInNetwork(networkForStables);
+
+        for (int i = 0; i < list.Count();)
+        {
+            Tx tx = list.ElementAt(i);
+
+            bool includesStableSwap = false;
+            bool stableSwapMoreThanMinswap = false;
+            int j = i;
+
+            while (list.ElementAt(j).Txhash == tx.Txhash)
+            {
+                if (stablesContractsInTheNetwork.Any(list.ElementAt(j).ContractAddress.ToLower().Contains))
+                {
+                    includesStableSwap = true;
+
+                    if (double.Parse(list.ElementAt(j).TokenValue) >= minSwap)
+                    {
+                        stableSwapMoreThanMinswap = true;
+                    }
+                }
+
+                j++;
+                if (j >= list.Count())
+                    break;
+            }
+
+            if (!stableSwapMoreThanMinswap)
+            {
+                j -= list.RemoveAll(x => x.Txhash == tx.Txhash);
+            }
+
+            i = j;
+        }
+
+        return list;
+    }
+
+    
+    public static string DetermineTokenContract(List<Tx> list, string networkForStables)
+    {
+        //this method can also do some statistics on whether the token
+        // get chosen the proper way
+
+        string[] stablesContractsInTheNetwork = AllStablesInNetworks.ArrayContractsInNetwork(networkForStables);
+
+        IList<TokenContractFilter> listCounter = new List<TokenContractFilter>();
+
+        for (int i = 0; i < list.Count(); i++)
+        {
+            Tx tx = list.ElementAt(i);
+
+            int indexOfContract = -1;
+            //if this contract is already on the list, take its index. otherwise -1
+            if (listCounter.Any(token => token.contract.Equals(list.ElementAt(i).ContractAddress,
+                    StringComparison.OrdinalIgnoreCase)))
+            {
+                indexOfContract = listCounter.IndexOf(listCounter.First(x => x.contract.Equals(list.ElementAt(i).ContractAddress,
+                StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (indexOfContract != -1)
+            {
+                listCounter.ElementAt(indexOfContract).counter++;
+            }
+            else if (!stablesContractsInTheNetwork.Any(list.ElementAt(i).ContractAddress.ToLower().Contains))
+            {
+                listCounter.Add(new TokenContractFilter(){
+                    name = tx.TokenName,
+                    contract = tx.ContractAddress,
+                    counter = 1
+                    });
+            }
+        }
+
+        string mostRepeatedToken_Contract = "";
+        for (int i = 0; i < listCounter.Count(); i++)
+        {
+            if (!listCounter.Any(token => token.counter > listCounter.ElementAt(i).counter))
+            {
+                mostRepeatedToken_Contract = listCounter.ElementAt(i).contract;
+            }
+        }
+
+        return mostRepeatedToken_Contract;
+    }
+
+    private class TokenContractFilter
+    {
+        public string name { get; set; }
+        public string contract { get; set; }
+        public int counter { get; set; }
+    }
+
+    public static List<Tx> FilterBuyOnly(List<Tx> list, string tokenContract)
+    {
+        List<SmartWallet> walletObj = new List<SmartWallet>();
+
+        for (int i = 0; i < list.Count();)
+        {
+            Tx tx = list.ElementAt(i);
+
+            if (list.ElementAt(i+1).Txhash != tx.Txhash)
+            {
+                //if it is a "buy the specified token tx", than it's last action would be
+                // to transfer the specified token to contract initiator address(buyer)
+                //SO, we can save the address of the receiver as the buyer's address
+                if (tx.ContractAddress == tokenContract)
+                {
+                    //What if the wallet has two Txs. Duplicates is bullshit...
+                }
+            
+            }
+        }
+    }
+}
+
+class SmartWallet
+{
+    public string walletAddress { get; set; }
+    public string balance { get; set; }
+    public string remainingTokenBalance { get; set; }
+    public string PNL { get; set; }
 }
 
 class Tx
@@ -165,12 +304,43 @@ class Tx
 
 //"Txhash","UnixTimestamp","DateTime","From","To","TokenValue","USDValueDayOfTx","ContractAddress","TokenName","TokenSymbol"
 
-class Stables
+class AllStablesInNetworks
 {
-    // public static string[] All(string network)
-    // {
+    public string network { get; set; }
+    public IList<Stable> stables { get; set; }
+    public class Stable
+    {
+        public string name { get; set; }
+        public string contract { get; set; }
+    }
+    
+    //returns list of stables in the passed in network($name, $contract)
+    public static IList<Stable> ListAllInNetwork(string network)
+    {
+        IList<AllStablesInNetworks> list = JsonConvert.DeserializeObject<IList<AllStablesInNetworks>>(
+            File.ReadAllText("stables.json")
+        );
 
-    // }
+        IList<Stable> listOfStables = list.First(x => x.network == network).stables;
+
+        return listOfStables;
+    }
+
+    //returns array of strings that consists only the contract addresses of stables
+    // in the passed in network
+    public static string[] ArrayContractsInNetwork(string network)
+    {
+        IList<Stable> list = ListAllInNetwork(network);
+
+        string[] array = new string[list.Count()];
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            array[i] = list.ElementAt(i).contract.ToLower();
+        }
+
+        return array;
+    }
 }
 
 class Network
@@ -192,25 +362,35 @@ class Explorer
         IList<Network> listOfNetworks = Network.AllNetworks();
 
         HttpClient httpClient = new HttpClient();
+
+        string lastNetwork = "";
         
         //while? there still is a second variant(network)
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 3; i++)
         {
             Tx tx = listOfTxs.ElementAt(i);
-
-            Console.WriteLine("".PadRight(5, '#'));
 
             for (int j = 0; j < listOfNetworks.Count(); j++)
             {
                 Network network = listOfNetworks.First(x => x.Name == "Polygon");
 
                 string status = GetResponseAsync(httpClient, network, tx).Result;
-
-                Console.WriteLine($"{j}Result for upper:" + status);
+                
+                if (status == "")
+                {
+                    listOfNetworks = listOfNetworks.Where(x => x.Name != network.Name).ToList<Network>();
+                }
+                else if (status == "1" || status == "0")
+                {
+                    lastNetwork = network.Name;
+                }
             }
+
+            if (listOfNetworks.Count() < 2)
+                break;
         }
 
-        return "2";
+        return lastNetwork;
     }
 
     private static async Task<string> GetResponseAsync(HttpClient httpClient, Network network, Tx tx)
@@ -244,7 +424,7 @@ class Explorer
         
         if (receiptResponse == null)
         {
-            //also can be a message, to control availability
+            //also can be a message, to control errorFlow of the api
             return "failed";
         }
 
@@ -262,3 +442,4 @@ class Explorer
         public string status { get; set; }
     }
 }
+

@@ -26,7 +26,6 @@
 /home/ttimmatti/proga/cs/webapi/bin/Debug/net6.0/here.json
 /home/ttimmatti/proga/cs/webapi/bin/Debug/net6.0/CsvHelper.dll
 /home/ttimmatti/proga/cs/webapi/bin/Debug/net6.0/Newtonsoft.Json.dll
-/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/here.json
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/webapi
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/webapi.deps.json
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/webapi.runtimeconfig.json
@@ -52,9 +51,10 @@
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/scopedcss/bundle/webapi.styles.css
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/webapi.csproj.CopyComplete
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/webapi.dll
-/home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/refint/webapi.dll
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/webapi.pdb
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/webapi.genruntimeconfig.cache
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/obj/Debug/net6.0/ref/webapi.dll
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/networks.json
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/stables.json
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/ref/webapi.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/here.json

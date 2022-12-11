@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "NyQMJ8iwHbeJgQZHNnPDZi2f0PyqxgRsTia0BoE5/Ijm/r8jSu79OwhAiydd117JCup/NQCRctuNrfzp8fFcTQ==",
+  "dgSpecHash": "81O7vj4YTlNmBXfa1u/8THUobcD/bbR1fhBoiNH+Bzkz/K1ReZcHKu8chzAFYrajzqtXGcEtq49J3FTL6CBIDA==",
   "success": true,
   "projectFilePath": "/home/ttimmatti/proga/cs/smartWalletsFilter_API/webapi.csproj",
   "expectedPackageFiles": [
@@ -87,8 +87,7 @@
     "/home/ttimmatti/.nuget/packages/system.threading.tasks.extensions/4.3.0/system.threading.tasks.extensions.4.3.0.nupkg.sha512",
     "/home/ttimmatti/.nuget/packages/system.threading.timer/4.3.0/system.threading.timer.4.3.0.nupkg.sha512",
     "/home/ttimmatti/.nuget/packages/system.xml.readerwriter/4.3.0/system.xml.readerwriter.4.3.0.nupkg.sha512",
-    "/home/ttimmatti/.nuget/packages/system.xml.xdocument/4.3.0/system.xml.xdocument.4.3.0.nupkg.sha512",
-    "/home/ttimmatti/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.11/microsoft.aspnetcore.app.ref.6.0.11.nupkg.sha512"
+    "/home/ttimmatti/.nuget/packages/system.xml.xdocument/4.3.0/system.xml.xdocument.4.3.0.nupkg.sha512"
   ],
   "logs": []
 }
