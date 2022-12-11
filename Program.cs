@@ -14,7 +14,7 @@ class Program
     {
         DotNetEnv.Env.Load();
 
-        bool development = true;
+        bool development = false;
         if (!development)
         {
             var builder = WebApplication.CreateBuilder();
@@ -57,7 +57,7 @@ class Maps
                 //return "File Was Processed Sucessfully!";
                 return SmartWallets.Get(fileContent, balance, txs, minswap, token, buyonly);
             }
-        ).Accepts<IFormFile>("json"); //NEED TO CLARIFY HOW THIS WORKS
+        ); //.Accepts<IFormFile>("json"); //NEED TO CLARIFY HOW THIS WORKS
 
         return app;
     }
@@ -120,7 +120,7 @@ class SmartWallets
             // met most frequently +
             string tokenContract = Data.DetermineTokenContract(list, network);
 
-            list = list.FilterBuyOnly(list, tokenContract);
+            list = Data.FilterBuyOnly(list, tokenContract);
         }
         //      IList<string> walletsList = new List<string>();
 
@@ -277,6 +277,8 @@ class Data
             
             }
         }
+
+        return list; //#################################
     }
 }
 

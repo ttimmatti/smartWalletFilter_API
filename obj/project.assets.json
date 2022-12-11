@@ -24,6 +24,53 @@
           "lib/netstandard1.3/DotNetEnv.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.1",
+          "Newtonsoft.Json.Bson": "1.0.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebApi.Core/5.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.9"
+        },
+        "compile": {
+          "lib/net45/System.Web.Http.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Http.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebApi.Owin/5.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Core": "[5.2.9, 5.3.0)",
+          "Microsoft.Owin": "2.0.2",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/System.Web.Http.Owin.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Http.Owin.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebApi.OwinSelfHost/5.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Owin": "[5.2.9, 5.3.0)",
+          "Microsoft.Owin.Host.HttpListener": "2.0.2",
+          "Microsoft.Owin.Hosting": "2.0.2"
+        }
+      },
       "Microsoft.Extensions.ApiDescription.Server/3.0.0": {
         "type": "package",
         "build": {
@@ -60,6 +107,40 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {}
+        }
+      },
+      "Microsoft.Owin/2.0.2": {
+        "type": "package",
+        "dependencies": {
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.dll": {}
+        }
+      },
+      "Microsoft.Owin.Host.HttpListener/2.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.Owin.Host.HttpListener.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Host.HttpListener.dll": {}
+        }
+      },
+      "Microsoft.Owin.Hosting/2.0.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Owin": "2.0.2",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Hosting.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Hosting.dll": {}
         }
       },
       "Microsoft.Win32.Primitives/4.3.0": {
@@ -129,6 +210,28 @@
         },
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {}
+        }
+      },
+      "Newtonsoft.Json.Bson/1.0.1": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "10.0.1"
+        },
+        "compile": {
+          "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
+        }
+      },
+      "Owin/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Owin.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Owin.dll": {}
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -1358,6 +1461,69 @@
         "lib/netstandard1.3/DotNetEnv.dll"
       ]
     },
+    "Microsoft.AspNet.WebApi.Client/5.2.9": {
+      "sha512": "cuVhPjjNMSEFpKXweMNBbsG4RUFuuZpFBm8tSyw309U9JEjcnbB6n3EPb4xwgcy9bJ38ctIbv5G8zXUBhlrPWw==",
+      "type": "package",
+      "path": "microsoft.aspnet.webapi.client/5.2.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NET.icon.png",
+        "NET_Library_EULA_ENU.txt",
+        "lib/net45/System.Net.Http.Formatting.dll",
+        "lib/net45/System.Net.Http.Formatting.xml",
+        "lib/netstandard2.0/System.Net.Http.Formatting.dll",
+        "lib/netstandard2.0/System.Net.Http.Formatting.xml",
+        "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll",
+        "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.xml",
+        "microsoft.aspnet.webapi.client.5.2.9.nupkg.sha512",
+        "microsoft.aspnet.webapi.client.nuspec"
+      ]
+    },
+    "Microsoft.AspNet.WebApi.Core/5.2.9": {
+      "sha512": "9C0/gBUeMBjorRFSmR5Z2j5wznf9BP5SddN+OZE7X0BpXgivBZTZ42d0h8tIjJzSLHYVCU4HZBf51+cidCY4fQ==",
+      "type": "package",
+      "path": "microsoft.aspnet.webapi.core/5.2.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Content/web.config.transform",
+        "NET.icon.png",
+        "NET_Library_EULA_ENU.txt",
+        "lib/net45/System.Web.Http.dll",
+        "lib/net45/System.Web.Http.xml",
+        "microsoft.aspnet.webapi.core.5.2.9.nupkg.sha512",
+        "microsoft.aspnet.webapi.core.nuspec"
+      ]
+    },
+    "Microsoft.AspNet.WebApi.Owin/5.2.9": {
+      "sha512": "VT7BPTtwZoThLQkdE0Oss6LhifMutNtxOSExVhUqlKl0zrQyIDc6zVt/2+qxjO8+HlEYo+rpF8u0YYKWCt8Jfw==",
+      "type": "package",
+      "path": "microsoft.aspnet.webapi.owin/5.2.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NET.icon.png",
+        "NET_Library_EULA_ENU.txt",
+        "lib/net45/System.Web.Http.Owin.dll",
+        "lib/net45/System.Web.Http.Owin.xml",
+        "microsoft.aspnet.webapi.owin.5.2.9.nupkg.sha512",
+        "microsoft.aspnet.webapi.owin.nuspec"
+      ]
+    },
+    "Microsoft.AspNet.WebApi.OwinSelfHost/5.2.9": {
+      "sha512": "e56ELmOBMO5CRdi8RDKQX9zQlaGLJTjuEcPiIGQCUbukVMZdX807bQXXqw4xHz8fb7IU2rW1w3DsoS7XNPf06w==",
+      "type": "package",
+      "path": "microsoft.aspnet.webapi.owinselfhost/5.2.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NET.icon.png",
+        "NET_Library_EULA_ENU.txt",
+        "microsoft.aspnet.webapi.owinselfhost.5.2.9.nupkg.sha512",
+        "microsoft.aspnet.webapi.owinselfhost.nuspec"
+      ]
+    },
     "Microsoft.Extensions.ApiDescription.Server/3.0.0": {
       "sha512": "LH4OE/76F6sOCslif7+Xh3fS/wUUrE5ryeXAMcoCnuwOQGT5Smw0p57IgDh/pHgHaGz/e+AmEQb7pRgb++wt0w==",
       "type": "package",
@@ -1430,6 +1596,51 @@
         "lib/netstandard2.0/Microsoft.OpenApi.xml",
         "microsoft.openapi.1.2.3.nupkg.sha512",
         "microsoft.openapi.nuspec"
+      ]
+    },
+    "Microsoft.Owin/2.0.2": {
+      "sha512": "WVBkCUzmzuBJbOFSfonVLcErTaj0w0NLTwAFR6NB8K6L4099NdvtSBO29JlLQ+Dzkkr5tgvXdcb++mEijBlhpg==",
+      "type": "package",
+      "path": "microsoft.owin/2.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/Microsoft.Owin.XML",
+        "lib/net40/Microsoft.Owin.dll",
+        "lib/net45/Microsoft.Owin.XML",
+        "lib/net45/Microsoft.Owin.dll",
+        "microsoft.owin.2.0.2.nupkg.sha512",
+        "microsoft.owin.nuspec"
+      ]
+    },
+    "Microsoft.Owin.Host.HttpListener/2.0.2": {
+      "sha512": "FvjlLadWzpKE2fZeHoa/d1krcVQ7U5/+D+HC3KL+v+jYyvFsFIobtROX0bTgqWkFYdhS3+AWveck63m4LE6SuA==",
+      "type": "package",
+      "path": "microsoft.owin.host.httplistener/2.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/Microsoft.Owin.Host.HttpListener.dll",
+        "lib/net40/Microsoft.Owin.Host.HttpListener.xml",
+        "lib/net45/Microsoft.Owin.Host.HttpListener.dll",
+        "lib/net45/Microsoft.Owin.Host.HttpListener.xml",
+        "microsoft.owin.host.httplistener.2.0.2.nupkg.sha512",
+        "microsoft.owin.host.httplistener.nuspec"
+      ]
+    },
+    "Microsoft.Owin.Hosting/2.0.2": {
+      "sha512": "FH94pnDTejmN+VicQEKYl6J6L4wMSlDYY61Yykhsc7ruJVUIP2wrts67vkyalbHcqaGNCdpYsChd7IOpXUcDzQ==",
+      "type": "package",
+      "path": "microsoft.owin.hosting/2.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/Microsoft.Owin.Hosting.XML",
+        "lib/net40/Microsoft.Owin.Hosting.dll",
+        "lib/net45/Microsoft.Owin.Hosting.XML",
+        "lib/net45/Microsoft.Owin.Hosting.dll",
+        "microsoft.owin.hosting.2.0.2.nupkg.sha512",
+        "microsoft.owin.hosting.nuspec"
       ]
     },
     "Microsoft.Win32.Primitives/4.3.0": {
@@ -1511,6 +1722,33 @@
         "newtonsoft.json.13.0.2.nupkg.sha512",
         "newtonsoft.json.nuspec",
         "packageIcon.png"
+      ]
+    },
+    "Newtonsoft.Json.Bson/1.0.1": {
+      "sha512": "5PYT/IqQ+UK31AmZiSS102R6EsTo+LGTSI8bp7WAUqDKaF4wHXD8U9u4WxTI1vc64tYi++8p3dk3WWNqPFgldw==",
+      "type": "package",
+      "path": "newtonsoft.json.bson/1.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net45/Newtonsoft.Json.Bson.dll",
+        "lib/net45/Newtonsoft.Json.Bson.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.Bson.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.Bson.xml",
+        "newtonsoft.json.bson.1.0.1.nupkg.sha512",
+        "newtonsoft.json.bson.nuspec"
+      ]
+    },
+    "Owin/1.0.0": {
+      "sha512": "OseTFniKmyp76mEzOBwIKGBRS5eMoYNkMKaMXOpxx9jv88+b6mh1rSaw43vjBOItNhaLFG3d0a20PfHyibH5sw==",
+      "type": "package",
+      "path": "owin/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/Owin.dll",
+        "owin.1.0.0.nupkg.sha512",
+        "owin.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -4826,6 +5064,7 @@
     "net6.0": [
       "CsvHelper >= 30.0.1",
       "DotNetEnv >= 2.3.0",
+      "Microsoft.AspNet.WebApi.OwinSelfHost >= 5.2.9",
       "Newtonsoft.Json >= 13.0.2",
       "Swashbuckle.AspNetCore >= 6.2.3"
     ]
@@ -4875,6 +5114,10 @@
             "target": "Package",
             "version": "[2.3.0, )"
           },
+          "Microsoft.AspNet.WebApi.OwinSelfHost": {
+            "target": "Package",
+            "version": "[5.2.9, )"
+          },
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.2, )"
@@ -4905,5 +5148,67 @@
         "runtimeIdentifierGraphPath": "/usr/lib/dotnet/dotnet6-6.0.110/sdk/6.0.110/RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.AspNet.WebApi.Core 5.2.9' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.AspNet.WebApi.Core",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.AspNet.WebApi.Owin 5.2.9' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.AspNet.WebApi.Owin",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.Owin 2.0.2' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.Owin",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.Owin.Host.HttpListener 2.0.2' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.Owin.Host.HttpListener",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.Owin.Hosting 2.0.2' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.Owin.Hosting",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Owin 1.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Owin",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
 }
