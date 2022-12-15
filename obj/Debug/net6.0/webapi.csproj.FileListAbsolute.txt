@@ -58,3 +58,12 @@
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/stables.json
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/ref/webapi.dll
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/here.json
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/System.Net.Http.Formatting.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/System.Web.Http.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/System.Web.Http.Owin.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Microsoft.Owin.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Microsoft.Owin.Host.HttpListener.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Microsoft.Owin.Hosting.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Newtonsoft.Json.Bson.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Owin.dll
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/walletsBO.json

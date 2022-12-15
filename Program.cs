@@ -14,7 +14,7 @@ class Program
     {
         DotNetEnv.Env.Load();
 
-        bool development = false;
+        bool development = true;
         if (!development)
         {
             var builder = WebApplication.CreateBuilder();
@@ -33,7 +33,7 @@ class Program
             app.Run();
         }
 
-        SmartWallets.Get(File.ReadAllText("here.csv"), 10000, 5, 1000, "", "true");
+        SmartWallets.Get(File.ReadAllText("here.csv"), 10000, 5, 1000, "", "");
     }
 }
 
@@ -113,18 +113,34 @@ class SmartWallets
         //        
         //!!! So, if buyonly is true, than we also need tokenContract to be specified.
         // Or we can try to guess it, based on the statistics...
+
+        //first we need to find out which token are we working with
+        // my plan is to choose a token that is not a stable and is
+        // met most frequently
+        string tokenContract = Data.DetermineTokenContract(list, network);
+
+        List<SmartWallet> walletsList = new List<SmartWallet>();
+
         if (buyonly == "true")
         {
-            //first we need to find out which token are we working with
-            // my plan is to choose a token that is not a stable and is
-            // met most frequently +
-            string tokenContract = Data.DetermineTokenContract(list, network);
-
-            list = Data.FilterBuyOnly(list, tokenContract);
+            walletsList = Data.FilterBuyOnly(list, tokenContract);
         }
-        //      IList<string> walletsList = new List<string>();
+        else
+        {
+            walletsList = Data.FilterRegular(list, tokenContract); // here tokencontract is used to track the bought amount
+        }
 
-        
+        //to track pnl we'd neet to save the timestamp of position opening,
+        //probably get the average price of token on the timestamp
+        // and the track profit from selling afterwards
+
+        //is there any reason we would need to track sell actions during this phase, because this phase is probably the accumulation
+        // so sell actions aren't really of our concern
+
+        //####################################
+        // im stuck on the tx actions. when do we add wallet using tx.From and when tx.To
+
+        File.WriteAllText("wallets.json", JsonConvert.SerializeObject(walletsList, Formatting.Indented));
         
         
         
@@ -257,37 +273,132 @@ class Data
         public int counter { get; set; }
     }
 
-    public static List<Tx> FilterBuyOnly(List<Tx> list, string tokenContract)
+    public static List<SmartWallet> FilterBuyOnly(List<Tx> list, string tokenContract)
     {
-        List<SmartWallet> walletObj = new List<SmartWallet>();
+        List<SmartWallet> walletsList = new List<SmartWallet>();
 
-        for (int i = 0; i < list.Count();)
+        for (int i = 0; i < list.Count(); i++)
         {
             Tx tx = list.ElementAt(i);
 
+            if (i == list.Count() - 1) //if it's the last tx. => list.ElementAt(i+1) would throw an exception
+            {
+                CheckWalletBO(tx, walletsList, tokenContract);
+
+                continue;
+            }
+
             if (list.ElementAt(i+1).Txhash != tx.Txhash)
             {
-                //if it is a "buy the specified token tx", than it's last action would be
+                //if it is a "buy the specified toke" tx, than it's last action would be
                 // to transfer the specified token to contract initiator address(buyer)
-                //SO, we can save the address of the receiver as the buyer's address
-                if (tx.ContractAddress == tokenContract)
-                {
-                    //What if the wallet has two Txs. Duplicates is bullshit...
-                }
-            
+                //SO, we can save the address of the receiver as the smart wallet address
+                
+                CheckWalletBO(tx, walletsList, tokenContract);
             }
         }
 
-        return list; //#################################
+        return walletsList; // should work ################################################################
+    }
+
+    // check wallet if buyonly | CheckWalletBuyOnly
+    private static List<SmartWallet> CheckWalletBO(Tx tx, List<SmartWallet> walletsList, string tokenContract)
+    {
+        if (tx.ContractAddress == tokenContract)
+        {
+            SmartWallet wallet = walletsList.FirstOrDefault(x => x.walletAddress == tx.To);
+                    
+            if (wallet != null)
+            {
+                // bought
+                walletsList.First(x => x.walletAddress == tx.To).bought += double.Parse(tx.TokenValue);
+            }
+            else
+            {
+                walletsList.Add(new SmartWallet(tx.To, double.Parse(tx.TokenValue),"0","0"));
+            }
+        }
+
+        return walletsList;
+    }
+
+    public static List<SmartWallet> FilterRegular(List<Tx> list, string tokenContract)
+    {
+        List<SmartWallet> walletsList = new List<SmartWallet>();
+
+        for (int i = 0; i < list.Count(); i++)
+        {
+            Tx tx = list.ElementAt(i);
+
+            if (i == list.Count() - 1) //if it's the last tx. => list.ElementAt(i+1) would throw an exception
+            {
+                CheckWalletR(tx, walletsList, tokenContract);
+
+                continue;
+            }
+
+            if (list.ElementAt(i+1).Txhash != tx.Txhash)
+            {
+                //if it is a "buy the specified toke" tx, than it's last action would be
+                // to transfer the specified token to contract initiator address(buyer)
+                //SO, we can save the address of the receiver as the smart wallet address
+                
+                CheckWalletR(tx, walletsList, tokenContract);
+            }
+        }
+
+        return walletsList;
+    }
+
+    // check wallet if !buyonly | CheckWalletRegular
+    private static List<SmartWallet> CheckWalletR(Tx tx, List<SmartWallet> walletsList, string tokenContract)
+    {
+        SmartWallet wallet = walletsList.FirstOrDefault(x => x.walletAddress == tx.To);
+
+        if (wallet != null)
+        {
+            if (tx.ContractAddress == tokenContract)
+            {
+                // bought | +=
+                walletsList.First(x => x.walletAddress == tx.To).bought += double.Parse(tx.TokenValue);
+            }
+
+            //else for if he sold
+            //optional. need to think about the logic
+        }
+        else
+        {
+            if (tx.ContractAddress == tokenContract)
+            {
+                // bought | new (received THE token in the final action of the tx)
+                walletsList.Add(new SmartWallet(tx.To, double.Parse(tx.TokenValue), "0", "0"));
+            }
+            else
+            {
+                // sold. Or bought but we missed it
+                walletsList.Add(new SmartWallet(tx.To, 0, "0", "0"));
+            }
+        }
+
+        return walletsList;
     }
 }
 
 class SmartWallet
 {
     public string walletAddress { get; set; }
-    public string balance { get; set; }
-    public string remainingTokenBalance { get; set; }
-    public string PNL { get; set; }
+    public double bought { get; set; }
+    public double sold { get; set; }
+    public string remainingTokenBalance { get; set; } //not calculated yet
+    public string PNL { get; set; } //not calculated yet
+
+    public SmartWallet(string walletAddress, double bought, string remainingTokenBalance, string PNL)
+    {
+        this.walletAddress = walletAddress;
+        this.bought = bought;
+        this.remainingTokenBalance = remainingTokenBalance;
+        this.PNL = PNL;
+    }
 }
 
 class Tx
