@@ -139,8 +139,17 @@ class SmartWallets
 
         //####################################
         // im stuck on the tx actions. when do we add wallet using tx.From and when tx.To
+        // i 100% need to know, hwo much did they sell during this snapshot, to know how much they actually bought after all...
+        // but i will do this after it's all working as it's optional
 
         File.WriteAllText("wallets.json", JsonConvert.SerializeObject(walletsList, Formatting.Indented));
+
+        //now we filter them according to wallet balance
+        // debank has an api to check total usd balance of the address, but its not free. 0.006$ per request
+        //100 requests per second
+
+        //i will use etherscan and so on. it will take some time to execute and it's a little harder to code
+        // but it'll work for sure
         
         
         
@@ -339,7 +348,7 @@ class Data
 
             if (list.ElementAt(i+1).Txhash != tx.Txhash)
             {
-                //if it is a "buy the specified toke" tx, than it's last action would be
+                //if it is a "buy the specified token" tx, than it's last action would be
                 // to transfer the specified token to contract initiator address(buyer)
                 //SO, we can save the address of the receiver as the smart wallet address
                 
