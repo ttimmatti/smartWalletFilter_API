@@ -69,3 +69,4 @@
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/walletsBO.json
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/wallets.json
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/zapper_response.json
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/zapper.json

@@ -373,16 +373,51 @@ class Data
     {
         string zapper_apikey = Environment.GetEnvironmentVariable("ZAPPER_API");
 
+        string[] addresses = new string[]{"0xF12aC6dE530c480267D747556A8e74D471dFE919",
+            "0x63c4723741f293C0903510598115cEd492534c41"};
+
         string requestUri = ("https://api.zapper.fi/v2/balances?" + 
-            "addresses[]=0x4DB589779C82611Eac9A7C5c6e9204b57Ac67631" +
+            "addresses[]=" + String.Join("&addresses[]=", addresses) +
             "&api_key=" + zapper_apikey);
 
         var response = await Prog.httpClient.GetAsync(requestUri);
         string readRead = await response.Content.ReadAsStringAsync();
 
-        object response1 = JsonConvert.DeserializeObject<object>(readRead);
+        // make an exception for api error. it gives status code and etc...
 
-        File.WriteAllText("zapper_response.json", JsonConvert.SerializeObject(response1, Formatting.Indented));
+        List<string> response1 = readRead.Split("\n\n").ToList<string>();
+
+        //filter non balance actions
+        for (int i = 0; i < response1.Count();)
+        {
+            if (!response1[i].Contains("event: balance"))
+                response1.RemoveAt(i);
+            else
+                i++;
+        }
+
+
+        int remLength = "event: balance\ndata:".Length;
+        
+        for (int i = 0; i < response1.Count(); i++)
+        {
+            response1[i] = "\"event\": \"balance\",\n\"data\":" +
+                response1[i].Substring(remLength);
+
+            response1[i] = "{" + response1[i] + "}";
+
+            // response1[i] = (i == response1.Count() - 1 ?
+            //     "{" + response1[i] +"}" : "{" + response1[i] +"},");
+        }
+
+        string formattedResponse = "[" + String.Join(',', response1) + "]";
+
+        object r123 = JsonConvert.DeserializeObject<object>(formattedResponse);
+
+        File.WriteAllText("zapper.json",
+            JsonConvert.SerializeObject(r123, Formatting.Indented));
+
+        ZapperResponse.AddressBalance(formattedResponse);
 
         return 1;
     }
