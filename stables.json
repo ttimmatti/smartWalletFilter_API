@@ -1,30 +1,26 @@
 [
     {
+        "name": "USDT",
+        "contract": "0x124323142342",
         "network": "Polygon",
-        "stables":
-        [
-            {
-                "name": "USDT",
-                "contract": "0x124323142342"
-            },
-            {
-                "name": "DAI",
-                "contract": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
-            }
-        ]
+        "usdEqual": true
     },
     {
+        "name": "DAI",
+        "contract": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+        "network": "Polygon",
+        "usdEqual": true
+    },
+    {
+        "name": "USDT",
+        "contract": "0x1242342344634",
         "network": "BSC",
-        "stables":
-        [
-            {
-                "name": "USDT",
-                "contract": "0x1242342344634"
-            },
-            {
-                "name": "DAI",
-                "contract": "0x134652653fdg34"
-            }
-        ]
+        "usdEqual": true
+    },
+    {
+        "name": "DAI",
+        "contract": "0x134652653fdg34",
+        "network": "BSC",
+        "usdEqual": true
     }
 ]

@@ -13,6 +13,7 @@ class Program
     public static void Main()
     {
         DotNetEnv.Env.Load();
+        Prog.httpClient = new HttpClient();
 
         bool development = true;
         if (!development)
@@ -102,8 +103,8 @@ class SmartWallets
         // check for stables vs 1000
         // need to hardcode:
         // chain native tokens(5) and wrapped(5) and natives in the network, stables(usdt,busd,dai,usdn etc)
-        //
-        list = Data.FilterTxWithLessThanMinswap(list, network, minSwap);
+        // need to get the prices for native tokens (eth, bnb, matic)
+        list = TxValue.FilterTxWithLessThanMinswap(list, network, minSwap);
         //now we need to implement solution for
         //1. buyonly included
         //2. tokenfilter included
@@ -147,6 +148,9 @@ class SmartWallets
         //now we filter them according to wallet balance
         // debank has an api to check total usd balance of the address, but its not free. 0.006$ per request
         //100 requests per second
+        // trying to do with zapper api
+        SmartWallets.FilterBalance(walletsList, balance);
+
 
         //i will use etherscan and so on. it will take some time to execute and it's a little harder to code
         // but it'll work for sure
@@ -161,6 +165,18 @@ class SmartWallets
         //Tx tx = list.ElementAt(0);
         
         return ($"balance={balance}&txs={numOfTxs}&minswap={minSwap}&token={token}");
+    }
+
+    private static List<SmartWallet> FilterBalance(List<SmartWallet> walletsList, int? balance)
+    {
+        for (int i = 0; i < 1; i++)
+        {
+            SmartWallet wallet = walletsList.ElementAt(i);
+
+            double getBalance = Data.GetBalanceForWallet(wallet).Result;
+        }
+
+        return walletsList;
     }
 }
 
@@ -185,54 +201,13 @@ class Data
         return records;
     }
 
-    public static List<Tx> FilterTxWithLessThanMinswap(List<Tx> list, string networkForStables,
-            int? minSwap)
-    {
-        string[] stablesContractsInTheNetwork = AllStablesInNetworks.ArrayContractsInNetwork(networkForStables);
-
-        for (int i = 0; i < list.Count();)
-        {
-            Tx tx = list.ElementAt(i);
-
-            bool includesStableSwap = false;
-            bool stableSwapMoreThanMinswap = false;
-            int j = i;
-
-            while (list.ElementAt(j).Txhash == tx.Txhash)
-            {
-                if (stablesContractsInTheNetwork.Any(list.ElementAt(j).ContractAddress.ToLower().Contains))
-                {
-                    includesStableSwap = true;
-
-                    if (double.Parse(list.ElementAt(j).TokenValue) >= minSwap)
-                    {
-                        stableSwapMoreThanMinswap = true;
-                    }
-                }
-
-                j++;
-                if (j >= list.Count())
-                    break;
-            }
-
-            if (!stableSwapMoreThanMinswap)
-            {
-                j -= list.RemoveAll(x => x.Txhash == tx.Txhash);
-            }
-
-            i = j;
-        }
-
-        return list;
-    }
-
     
     public static string DetermineTokenContract(List<Tx> list, string networkForStables)
     {
         //this method can also do some statistics on whether the token
         // get chosen the proper way
 
-        string[] stablesContractsInTheNetwork = AllStablesInNetworks.ArrayContractsInNetwork(networkForStables);
+        string[] stablesContractsInTheNetwork = Stable.ArrayContractsInNetwork(networkForStables);
 
         IList<TokenContractFilter> listCounter = new List<TokenContractFilter>();
 
@@ -321,10 +296,11 @@ class Data
             {
                 // bought
                 walletsList.First(x => x.walletAddress == tx.To).bought += double.Parse(tx.TokenValue);
+                walletsList.First(x => x.walletAddress == tx.To).txs++;
             }
             else
             {
-                walletsList.Add(new SmartWallet(tx.To, double.Parse(tx.TokenValue),"0","0"));
+                walletsList.Add(new SmartWallet(tx.To, double.Parse(tx.TokenValue), 0, "0", "0", 1));
             }
         }
 
@@ -370,6 +346,7 @@ class Data
             {
                 // bought | +=
                 walletsList.First(x => x.walletAddress == tx.To).bought += double.Parse(tx.TokenValue);
+                walletsList.First(x => x.walletAddress == tx.To).txs++;
             }
 
             //else for if he sold
@@ -380,16 +357,34 @@ class Data
             if (tx.ContractAddress == tokenContract)
             {
                 // bought | new (received THE token in the final action of the tx)
-                walletsList.Add(new SmartWallet(tx.To, double.Parse(tx.TokenValue), "0", "0"));
+                walletsList.Add(new SmartWallet(tx.To, double.Parse(tx.TokenValue), 0, "0", "0", 1));
             }
             else
             {
                 // sold. Or bought but we missed it
-                walletsList.Add(new SmartWallet(tx.To, 0, "0", "0"));
+                walletsList.Add(new SmartWallet(tx.To, 0, 0, "0", "0", 1));
             }
         }
 
         return walletsList;
+    }
+
+    public static async Task<double> GetBalanceForWallet(SmartWallet wallet)
+    {
+        string zapper_apikey = Environment.GetEnvironmentVariable("ZAPPER_API");
+
+        string requestUri = ("https://api.zapper.fi/v2/balances?" + 
+            "addresses[]=0x4DB589779C82611Eac9A7C5c6e9204b57Ac67631" +
+            "&api_key=" + zapper_apikey);
+
+        var response = await Prog.httpClient.GetAsync(requestUri);
+        string readRead = await response.Content.ReadAsStringAsync();
+
+        object response1 = JsonConvert.DeserializeObject<object>(readRead);
+
+        File.WriteAllText("zapper_response.json", JsonConvert.SerializeObject(response1, Formatting.Indented));
+
+        return 1;
     }
 }
 
@@ -400,13 +395,17 @@ class SmartWallet
     public double sold { get; set; }
     public string remainingTokenBalance { get; set; } //not calculated yet
     public string PNL { get; set; } //not calculated yet
+    public int txs { get; set; }
 
-    public SmartWallet(string walletAddress, double bought, string remainingTokenBalance, string PNL)
+    public SmartWallet(string walletAddress, double bought, double sold,
+                string remainingTokenBalance, string PNL, int txs)
     {
         this.walletAddress = walletAddress;
         this.bought = bought;
+        this.sold = sold;
         this.remainingTokenBalance = remainingTokenBalance;
         this.PNL = PNL;
+        this.txs = txs;
     }
 }
 
@@ -426,56 +425,9 @@ class Tx
 
 //"Txhash","UnixTimestamp","DateTime","From","To","TokenValue","USDValueDayOfTx","ContractAddress","TokenName","TokenSymbol"
 
-class AllStablesInNetworks
-{
-    public string network { get; set; }
-    public IList<Stable> stables { get; set; }
-    public class Stable
-    {
-        public string name { get; set; }
-        public string contract { get; set; }
-    }
-    
-    //returns list of stables in the passed in network($name, $contract)
-    public static IList<Stable> ListAllInNetwork(string network)
-    {
-        IList<AllStablesInNetworks> list = JsonConvert.DeserializeObject<IList<AllStablesInNetworks>>(
-            File.ReadAllText("stables.json")
-        );
 
-        IList<Stable> listOfStables = list.First(x => x.network == network).stables;
 
-        return listOfStables;
-    }
 
-    //returns array of strings that consists only the contract addresses of stables
-    // in the passed in network
-    public static string[] ArrayContractsInNetwork(string network)
-    {
-        IList<Stable> list = ListAllInNetwork(network);
-
-        string[] array = new string[list.Count()];
-
-        for (int i = 0; i < array.Length; i++)
-        {
-            array[i] = list.ElementAt(i).contract.ToLower();
-        }
-
-        return array;
-    }
-}
-
-class Network
-{
-    public string Name { get; set; }
-    public string Api { get; set; }
-    public string Key { get; set; }
-    public static IList<Network> AllNetworks()
-    {
-        return JsonConvert.DeserializeObject<List<Network>>(File.ReadAllText("networks.json"));
-    }
-    
-}
 
 class Explorer
 {

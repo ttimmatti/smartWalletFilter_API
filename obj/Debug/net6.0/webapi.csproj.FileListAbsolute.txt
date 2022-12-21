@@ -67,3 +67,5 @@
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Newtonsoft.Json.Bson.dll
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/Owin.dll
 /home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/walletsBO.json
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/wallets.json
+/home/ttimmatti/proga/cs/smartWalletsFilter_API/bin/Debug/net6.0/zapper_response.json
