@@ -7,15 +7,16 @@ using CsvHelper;
 using Newtonsoft.Json;
 using System.Net.Http;
 using DotNetEnv;
+using System.Diagnostics;
+using System.Web.Http.Results;
 
 class Program
 {
     public static void Main()
     {
         DotNetEnv.Env.Load();
-        Prog.httpClient = new HttpClient();
 
-        bool development = true;
+        bool development = false;
         if (!development)
         {
             var builder = WebApplication.CreateBuilder();
@@ -27,7 +28,7 @@ class Program
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI();
-            
+
 
             app = Maps.MapPost(app);
 
@@ -43,7 +44,7 @@ class Maps
     public static WebApplication MapPost(WebApplication app)
     {
         //?balance=10000&txs=5&minswap=1000&token=<token address>
-        app.MapPut("/upload",
+        app.MapPost("/upload",
             async (HttpRequest request, int? balance, int? txs, int? minswap, string? token, string? buyonly) =>
             {
                 string fileContent = "";
@@ -51,11 +52,8 @@ class Maps
                 {
                     // Read the raw file as a `string`.
                     fileContent = await reader.ReadToEndAsync();
-                }    
-                // Do something with `fileContent`...
-                SmartWallets.Get(fileContent, balance, txs, minswap, token, buyonly);
-        
-                //return "File Was Processed Sucessfully!";
+                }
+
                 return SmartWallets.Get(fileContent, balance, txs, minswap, token, buyonly);
             }
         ); //.Accepts<IFormFile>("json"); //NEED TO CLARIFY HOW THIS WORKS
@@ -69,8 +67,8 @@ class SmartWallets
     public static string Get(string csv, int? balance, int? numOfTxs, int? minSwap, string token, string buyonly)
     {
         //if value is null then we assign it its default value
-        balance = balance??10000; numOfTxs = numOfTxs??5; minSwap = minSwap??1000; token = token??"";
-        buyonly = buyonly??"false";
+        balance = balance ?? 10000; numOfTxs = numOfTxs ?? 5; minSwap = minSwap ?? 1000; token = token ?? "";
+        buyonly = buyonly ?? "false";
 
         //load networks
 
@@ -97,7 +95,6 @@ class SmartWallets
         //What if the Api is down!!!
 
         string network = Explorer.DetermineNetwork(list);
-        Console.WriteLine(network); //REMOVE FOR PRODUCTION!!!!!!!!!!!!!!!!!!!!!!!
 
         //1. SWAP VALUE > minSwap|1000$
         // check for stables vs 1000
@@ -145,35 +142,217 @@ class SmartWallets
 
         File.WriteAllText("wallets.json", JsonConvert.SerializeObject(walletsList, Formatting.Indented));
 
+        SmartWallets.FilterTxCount(walletsList, numOfTxs);
+
         //now we filter them according to wallet balance
         // debank has an api to check total usd balance of the address, but its not free. 0.006$ per request
         //100 requests per second
-        // trying to do with zapper api
+        // tried zapper.fi but it's too slow, 30rpm
+        // for now sticked to the debank api, api was stolen from the page load calls
+        //tested it and it didnt ban for fraud. yet. :)
         SmartWallets.FilterBalance(walletsList, balance);
 
-
-        //i will use etherscan and so on. it will take some time to execute and it's a little harder to code
-        // but it'll work for sure
-        
-        
-        
-
-
-
         File.WriteAllText("here.json", JsonConvert.SerializeObject(list, Formatting.Indented));
+        File.WriteAllText("wallets.json", JsonConvert.SerializeObject(walletsList, Formatting.Indented));
 
-        //Tx tx = list.ElementAt(0);
-        
-        return ($"balance={balance}&txs={numOfTxs}&minswap={minSwap}&token={token}");
+        return JsonConvert.SerializeObject(walletsList);
+    }
+
+    private static List<SmartWallet> FilterTxCount(List<SmartWallet> walletsList, int? numOfTxs)
+    {
+        // using etherscan api
+        // get current time in unix format
+        // we call #Blocks Get Block Number by Timestamp, where timestamp is
+        // a week ago from now
+        //
+        // then call #Accounts Get a list of 'Normal' Transactions By Address with startblock
+        // that we have received from get block func and endblock 99999999 (just leave blank)
+
+        //timestamp a week ago
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 7 * 24 * 60 * 60;
+
+        IList<Network> listOfNetworks = Network.AllNetworks();
+
+        using (HttpClient httpClient = new())
+        {
+            for (int i = 0; i < walletsList.Count(); i++)
+            {
+                int txCount = 0;
+
+                string address = walletsList.ElementAt(i).walletAddress;
+
+                // sum up txCount for every network until its > numOfTxs, if not delete wallet
+                for (int j = 0; j < listOfNetworks.Count(); j++)
+                {
+                    long blockNoNow = 0;
+
+                    var network = listOfNetworks.ElementAt(j);
+
+                    //get startBlock
+                    blockNoNow = GetBlock(httpClient, timestamp, network).Result;
+
+                    //get txs for address from startBlock
+                    txCount += GetTxCount(httpClient, blockNoNow, network, numOfTxs, address).Result;
+
+                    if (txCount > numOfTxs)
+                        break;
+                }
+
+                if (txCount < numOfTxs)
+                {
+                    walletsList.RemoveAll(x => x.walletAddress == address);
+                    i--;
+                }
+                else
+                {
+                    // add recentTxs to wallet object
+                    walletsList.ElementAt(i).recentTxs = txCount;
+                }
+            }
+        }
+
+        return walletsList;
+    }
+
+    private static async Task<int> GetTxCount(HttpClient httpClient, long startBlock,
+        Network network, int? numOfTxs, string address)
+    {
+        // https://api.etherscan.io/api
+        //     ?module=account
+        //     &action=txlist
+        //     &address=0xc5102fE9359FD9a28f877a67E36B0F050d81a3CC
+        //     &startblock=0
+        //     &endblock=99999999
+        //     &page=1
+        //     &offset=10
+        //     &sort=asc
+        //     &apikey=YourApiKeyToken
+
+        int txCount = 0;
+
+        for (int j = 0; j < 3; j++)
+        {
+            Stopwatch watch = new();
+            watch.Start();
+
+            try
+            {
+                HttpResponseMessage message = await httpClient.GetAsync(network.Api +
+                    "?module=account&action=txlist&address=" + address +
+                    "&startblock=" + startBlock + "&page=1" +
+                    "&offset=" + (numOfTxs + 1) + "&sort=desc" + "&apikey=" + network.Key);
+
+                string readResponse = await message.Content.ReadAsStringAsync();
+
+                TxResponse response = JsonConvert.DeserializeObject<TxResponse>(readResponse);
+
+                txCount = response.result.Count();
+
+                break;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
+                Thread.Sleep(500);
+            }
+
+            watch.Stop();
+            Thread.Sleep(watch.ElapsedMilliseconds > 200 ? 100 : 300);
+        }
+
+        return txCount;
+    }
+
+    private class TxResponse
+    {
+        public string status { get; set; }
+        public List<Tx1> result { get; set; }
+        public class Tx1
+        {
+            public string blockNumber { get; set; }
+        }
+    }
+
+    private static async Task<long> GetBlock(HttpClient httpClient, long timestamp, Network network)
+    {
+        // https://api.etherscan.io/api
+        //     ?module=block
+        //     &action=getblocknobytime
+        //     &timestamp=1578638524
+        //     &closest=before
+        //     &apikey=YourApiKeyToken
+
+        long blockNo = 0;
+
+        bool requestSuccess = false;
+
+        for (int j = 0; j < 3; j++)
+        {
+            Stopwatch watch = new();
+            watch.Start();
+
+            try
+            {
+                HttpResponseMessage message = await httpClient.GetAsync(network.Api +
+                    "?module=block&action=getblocknobytime&timestamp=" + timestamp +
+                    "&closest=before&apikey=" + network.Key);
+
+                string readResponse = await message.Content.ReadAsStringAsync();
+
+                BlockNo response = JsonConvert.DeserializeObject<BlockNo>(readResponse);
+
+                requestSuccess = long.TryParse(response.result, out blockNo);
+                if (!requestSuccess)
+                    throw new Exception($"couldn't parse blocknumber\n{readResponse}");
+
+                break;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
+                Thread.Sleep(500);
+            }
+
+            watch.Stop();
+            Thread.Sleep(watch.ElapsedMilliseconds > 200 ? 100 : 300);
+        }
+
+        return blockNo;
+    }
+
+    private class BlockNo
+    {
+        // {"status":"0","message":"NOTOK","result":"Max rate limit reached"}
+        // {"status":"1","message":"OK","result":"9251482"}
+
+        public string status { get; set; }
+        public string result { get; set; }
     }
 
     private static List<SmartWallet> FilterBalance(List<SmartWallet> walletsList, int? balance)
     {
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < walletsList.Count();)
         {
             SmartWallet wallet = walletsList.ElementAt(i);
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             double getBalance = Data.GetBalanceForWallet(wallet).Result;
+
+            stopwatch.Stop();
+            Console.Write("ellapsed time" + stopwatch.ElapsedMilliseconds.ToString());
+            Thread.Sleep(stopwatch.ElapsedMilliseconds > 200 ? 100 : 300);
+
+            Console.WriteLine(i);
+
+            if (getBalance < balance)
+                walletsList.RemoveAt(i);
+            else
+            {
+                walletsList.ElementAt(i).total_balance = getBalance;
+                i++;
+            }
         }
 
         return walletsList;
@@ -201,7 +380,7 @@ class Data
         return records;
     }
 
-    
+
     public static string DetermineTokenContract(List<Tx> list, string networkForStables)
     {
         //this method can also do some statistics on whether the token
@@ -230,11 +409,12 @@ class Data
             }
             else if (!stablesContractsInTheNetwork.Any(list.ElementAt(i).ContractAddress.ToLower().Contains))
             {
-                listCounter.Add(new TokenContractFilter(){
+                listCounter.Add(new TokenContractFilter()
+                {
                     name = tx.TokenName,
                     contract = tx.ContractAddress,
                     counter = 1
-                    });
+                });
             }
         }
 
@@ -272,12 +452,12 @@ class Data
                 continue;
             }
 
-            if (list.ElementAt(i+1).Txhash != tx.Txhash)
+            if (list.ElementAt(i + 1).Txhash != tx.Txhash)
             {
                 //if it is a "buy the specified toke" tx, than it's last action would be
                 // to transfer the specified token to contract initiator address(buyer)
                 //SO, we can save the address of the receiver as the smart wallet address
-                
+
                 CheckWalletBO(tx, walletsList, tokenContract);
             }
         }
@@ -291,7 +471,7 @@ class Data
         if (tx.ContractAddress == tokenContract)
         {
             SmartWallet wallet = walletsList.FirstOrDefault(x => x.walletAddress == tx.To);
-                    
+
             if (wallet != null)
             {
                 // bought
@@ -322,12 +502,12 @@ class Data
                 continue;
             }
 
-            if (list.ElementAt(i+1).Txhash != tx.Txhash)
+            if (list.ElementAt(i + 1).Txhash != tx.Txhash)
             {
                 //if it is a "buy the specified token" tx, than it's last action would be
                 // to transfer the specified token to contract initiator address(buyer)
                 //SO, we can save the address of the receiver as the smart wallet address
-                
+
                 CheckWalletR(tx, walletsList, tokenContract);
             }
         }
@@ -371,76 +551,73 @@ class Data
 
     public static async Task<double> GetBalanceForWallet(SmartWallet wallet)
     {
-        string zapper_apikey = Environment.GetEnvironmentVariable("ZAPPER_API");
+        // this one parses all the users profile info. it's used more often when loading the page
+        // in browser. maybe it's mode safe to use then
+        //https://api.debank.com/hi/user/info?id={address}
 
-        string[] addresses = new string[]{"0xF12aC6dE530c480267D747556A8e74D471dFE919",
-            "0x63c4723741f293C0903510598115cEd492534c41"};
+        // this one is called only one time per page_reload, but parses less info... will try
+        // this one
+        //https://api.debank.com/user/total_balance?addr={address}
 
-        string requestUri = ("https://api.zapper.fi/v2/balances?" + 
-            "addresses[]=" + String.Join("&addresses[]=", addresses) +
-            "&api_key=" + zapper_apikey);
+        string requestUri = "https://api.debank.com/hi/user/info?id=";
+        requestUri += wallet.walletAddress;
 
-        var response = await Prog.httpClient.GetAsync(requestUri);
+        HttpResponseMessage response = new();
+        using (HttpClient httpClient = new())
+        {
+            response = await httpClient.GetAsync(requestUri);
+        }
+
         string readRead = await response.Content.ReadAsStringAsync();
 
-        // make an exception for api error. it gives status code and etc...
+        Console.WriteLine(readRead);
 
-        List<string> response1 = readRead.Split("\n\n").ToList<string>();
+        DebankResponse response1 = JsonConvert.DeserializeObject<DebankResponse>(readRead);
 
-        //filter non balance actions
-        for (int i = 0; i < response1.Count();)
+        if (response1.data == null)
+            return 0;
+
+        Console.WriteLine(response1.data.user.usd_value);
+
+        return response1.data.user.usd_value;
+    }
+
+    public class DebankResponse
+    {
+        public Data data { get; set; }
+        public class Data
         {
-            if (!response1[i].Contains("event: balance"))
-                response1.RemoveAt(i);
-            else
-                i++;
+            public User user { get; set; }
+            public class User
+            {
+                public double usd_value { get; set; }
+            }
         }
-
-
-        int remLength = "event: balance\ndata:".Length;
-        
-        for (int i = 0; i < response1.Count(); i++)
-        {
-            response1[i] = "\"event\": \"balance\",\n\"data\":" +
-                response1[i].Substring(remLength);
-
-            response1[i] = "{" + response1[i] + "}";
-
-            // response1[i] = (i == response1.Count() - 1 ?
-            //     "{" + response1[i] +"}" : "{" + response1[i] +"},");
-        }
-
-        string formattedResponse = "[" + String.Join(',', response1) + "]";
-
-        object r123 = JsonConvert.DeserializeObject<object>(formattedResponse);
-
-        File.WriteAllText("zapper.json",
-            JsonConvert.SerializeObject(r123, Formatting.Indented));
-
-        ZapperResponse.AddressBalance(formattedResponse);
-
-        return 1;
     }
 }
 
 class SmartWallet
 {
     public string walletAddress { get; set; }
+    public double total_balance { get; set; }
     public double bought { get; set; }
     public double sold { get; set; }
     public string remainingTokenBalance { get; set; } //not calculated yet
     public string PNL { get; set; } //not calculated yet
     public int txs { get; set; }
+    public int recentTxs { get; set; }
 
     public SmartWallet(string walletAddress, double bought, double sold,
                 string remainingTokenBalance, string PNL, int txs)
     {
         this.walletAddress = walletAddress;
+        this.total_balance = 0;
         this.bought = bought;
         this.sold = sold;
         this.remainingTokenBalance = remainingTokenBalance;
         this.PNL = PNL;
         this.txs = txs;
+        this.recentTxs = 0;
     }
 }
 
@@ -470,10 +647,8 @@ class Explorer
     {
         IList<Network> listOfNetworks = Network.AllNetworks();
 
-        HttpClient httpClient = new HttpClient();
-
         string lastNetwork = "";
-        
+
         //while? there still is a second variant(network)
         for (int i = 0; i < 3; i++)
         {
@@ -483,8 +658,12 @@ class Explorer
             {
                 Network network = listOfNetworks.First(x => x.Name == "Polygon");
 
-                string status = GetResponseAsync(httpClient, network, tx).Result;
-                
+                string status = "";
+                using (HttpClient httpClient = new())
+                {
+                    status = GetResponseAsync(httpClient, network, tx).Result;
+                }
+
                 if (status == "")
                 {
                     listOfNetworks = listOfNetworks.Where(x => x.Name != network.Name).ToList<Network>();
@@ -509,7 +688,7 @@ class Explorer
         {
             bool success = true;
             try
-            {       
+            {
                 HttpRequestMessage message = new HttpRequestMessage();
                 message.RequestUri = new Uri(network.Api + "?module=transaction&action=gettxreceiptstatus&txhash=" +
                 tx.Txhash + "&apikey=" + network.Key);
@@ -530,7 +709,7 @@ class Explorer
             if (success)
                 break;
         }
-        
+
         if (receiptResponse == null)
         {
             //also can be a message, to control errorFlow of the api
