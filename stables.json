@@ -1,8 +1,92 @@
 [
     {
         "name": "USDT",
-        "contract": "0x124323142342",
+        "contract": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "USDT",
+        "contract": "0x55d398326f99059fF775485246999027B3197955",
+        "network": "BSC",
+        "usdEqual": true
+    },
+    {
+        "name": "USDT",
+        "contract": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
         "network": "Polygon",
+        "usdEqual": true
+    },
+    {
+        "name": "USDT",
+        "contract": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+        "network": "Optimism",
+        "usdEqual": true
+    },
+    {
+        "name": "USDT",
+        "contract": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+        "network": "Arbitrum",
+        "usdEqual": true
+    },
+    {
+        "name": "USDC",
+        "contract": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "USDC",
+        "contract": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+        "network": "BSC",
+        "usdEqual": true
+    },
+    {
+        "name": "USDC",
+        "contract": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+        "network": "Polygon",
+        "usdEqual": true
+    },
+    {
+        "name": "USDC",
+        "contract": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+        "network": "Optimism",
+        "usdEqual": true
+    },
+    {
+        "name": "USDC",
+        "contract": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+        "network": "Arbitrum",
+        "usdEqual": true
+    },
+    {
+        "name": "BUSD",
+        "contract": "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "BUSD",
+        "contract": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "network": "BSC",
+        "usdEqual": true
+    },
+    {
+        "name": "BUSD",
+        "contract": "0x9C9e5fD8bbc25984B178FdCE6117Defa39d2db39",
+        "network": "Polygon",
+        "usdEqual": true
+    },
+    {
+        "name": "DAI",
+        "contract": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "DAI",
+        "contract": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+        "network": "BSC",
         "usdEqual": true
     },
     {
@@ -12,15 +96,165 @@
         "usdEqual": true
     },
     {
-        "name": "USDT",
-        "contract": "0x1242342344634",
-        "network": "BSC",
+        "name": "DAI",
+        "contract": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+        "network": "Optimism",
         "usdEqual": true
     },
     {
         "name": "DAI",
-        "contract": "0x134652653fdg34",
+        "contract": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+        "network": "Arbitrum",
+        "usdEqual": true
+    },
+    {
+        "name": "USDP",
+        "contract": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "USDP",
+        "contract": "0xb7F8Cd00C5A06c0537E2aBfF0b58033d02e5E094",
         "network": "BSC",
         "usdEqual": true
+    },
+    {
+        "name": "TUSD",
+        "contract": "0x0000000000085d4780B73119b644AE5ecd22b376",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "TUSD",
+        "contract": "0x14016E85a25aeb13065688cAFB43044C2ef86784",
+        "network": "BSC",
+        "usdEqual": true
+    },
+    {
+        "name": "TUSD",
+        "contract": "0x4D15a3A2286D883AF0AA1B3f21367843FAc63E07",
+        "network": "Arbitrum",
+        "usdEqual": true
+    },
+    {
+        "name": "FRAX",
+        "contract": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "FRAX",
+        "contract": "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89",
+        "network": "Polygon",
+        "usdEqual": true
+    },
+    {
+        "name": "FRAX",
+        "contract": "0x90C97F71E18723b0Cf0dfa30ee176Ab653E89F40",
+        "network": "BSC",
+        "usdEqual": true
+    },
+    {
+        "name": "FRAX",
+        "contract": "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
+        "network": "Arbitrum",
+        "usdEqual": true
+    },
+    {
+        "name": "sUSD",
+        "contract": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+        "network": "Ethereum",
+        "usdEqual": true
+    },
+    {
+        "name": "sUSD",
+        "contract": "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9",
+        "network": "Optimism",
+        "usdEqual": true
+    },
+    {
+        "name": "ETH",
+        "contract": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+        "network": "BSC",
+        "usdEqual": false
+    },
+    {
+        "name": "WETH",
+        "contract": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "network": "Ethereum",
+        "usdEqual": false
+    },
+    {
+        "name": "WETH",
+        "contract": "0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA",
+        "network": "BSC",
+        "usdEqual": false
+    },
+    {
+        "name": "WETH",
+        "contract": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+        "network": "Polygon",
+        "usdEqual": false
+    },
+    {
+        "name": "WETH",
+        "contract": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        "network": "Arbitrum",
+        "usdEqual": false
+    },
+    {
+        "name": "WETH",
+        "contract": "0x4200000000000000000000000000000000000006",
+        "network": "Optimism",
+        "usdEqual": false
+    },
+    {
+        "name": "WBNB",
+        "contract": "0x418D75f65a02b3D53B2418FB8E1fe493759c7605",
+        "network": "Ethereum",
+        "usdEqual": false
+    },
+    {
+        "name": "WBNB",
+        "contract": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "network": "BSC",
+        "usdEqual": false
+    },
+    {
+        "name": "WBNB",
+        "contract": "0xeCDCB5B88F8e3C15f95c720C51c71c9E2080525d",
+        "network": "Polygon",
+        "usdEqual": false
+    },
+    {
+        "name": "MATIC",
+        "contract": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+        "network": "Ethereum",
+        "usdEqual": false
+    },
+    {
+        "name": "MATIC",
+        "contract": "0xCC42724C6683B7E57334c4E856f4c9965ED682bD",
+        "network": "BSC",
+        "usdEqual": false
+    },
+    {
+        "name": "MATIC",
+        "contract": "0x0000000000000000000000000000000000001010",
+        "network": "Polygon",
+        "usdEqual": false
+    },
+    {
+        "name": "WMATIC",
+        "contract": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        "network": "Polygon",
+        "usdEqual": false
+    },
+    {
+        "name": "WMATIC",
+        "contract": "0xc836d8dC361E44DbE64c4862D55BA041F88Ddd39",
+        "network": "BSC",
+        "usdEqual": false
     }
 ]

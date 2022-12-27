@@ -1,68 +1,8 @@
 [
   {
-    "walletAddress": "0x846976adde6f17afd4590312781dca81455c21d8",
-    "total_balance": 56049.37803943264,
+    "walletAddress": "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16",
+    "total_balance": 152774367.52194554,
     "bought": 0.0,
-    "sold": 0.0,
-    "remainingTokenBalance": "0",
-    "PNL": "0",
-    "txs": 1,
-    "recentTxs": 6
-  },
-  {
-    "walletAddress": "0xe4f94b8262e7962270507d74c84a60a509896f7b",
-    "total_balance": 79104.04700330648,
-    "bought": 1464.1628944559084,
-    "sold": 0.0,
-    "remainingTokenBalance": "0",
-    "PNL": "0",
-    "txs": 1,
-    "recentTxs": 5
-  },
-  {
-    "walletAddress": "0x4d82a8afdf423681b60811943015c26d0c796ae9",
-    "total_balance": 45650.22466825621,
-    "bought": 0.0,
-    "sold": 0.0,
-    "remainingTokenBalance": "0",
-    "PNL": "0",
-    "txs": 1,
-    "recentTxs": 10
-  },
-  {
-    "walletAddress": "0x60e395edb1c754c0841e5795c9252c906907c76c",
-    "total_balance": 174450.54098925286,
-    "bought": 3164.0954267653096,
-    "sold": 0.0,
-    "remainingTokenBalance": "0",
-    "PNL": "0",
-    "txs": 1,
-    "recentTxs": 6
-  },
-  {
-    "walletAddress": "0x69cfafca9c889d6efc1acc5651ce7a5ec6cdc231",
-    "total_balance": 6563257.910320977,
-    "bought": 32376.09120209171,
-    "sold": 0.0,
-    "remainingTokenBalance": "0",
-    "PNL": "0",
-    "txs": 6,
-    "recentTxs": 10
-  },
-  {
-    "walletAddress": "0x0ea9aa3463153c49e41b145e3bd7bc6435798bd8",
-    "total_balance": 234204.86504608727,
-    "bought": 0.0,
-    "sold": 0.0,
-    "remainingTokenBalance": "0",
-    "PNL": "0",
-    "txs": 1,
-    "recentTxs": 6
-  },
-  {
-    "walletAddress": "0xd8a005fbd4aabfa98c9495532d4cb8adb12c040d",
-    "total_balance": 224075.50799553917,
-    "bought": 2130.374815176099,
     "sold": 0.0,
     "remainingTokenBalance": "0",
     "PNL": "0",

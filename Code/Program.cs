@@ -95,6 +95,7 @@ class SmartWallets
         //What if the Api is down!!!
 
         string network = Explorer.DetermineNetwork(list);
+        //if returns "" then throw exception: "couldnt determine network"
 
         //1. SWAP VALUE > minSwap|1000$
         // check for stables vs 1000
@@ -119,6 +120,8 @@ class SmartWallets
 
         List<SmartWallet> walletsList = new List<SmartWallet>();
 
+        //need to take both "from" and "to" wallets and check them both.
+        //if wallet holds more then 50 million, it's probably a dex or smth
         if (buyonly == "true")
         {
             walletsList = Data.FilterBuyOnly(list, tokenContract);
@@ -454,7 +457,7 @@ class Data
 
             if (list.ElementAt(i + 1).Txhash != tx.Txhash)
             {
-                //if it is a "buy the specified toke" tx, than it's last action would be
+                //if it is a "buy the specified token" tx, than it's last action would be
                 // to transfer the specified token to contract initiator address(buyer)
                 //SO, we can save the address of the receiver as the smart wallet address
 
@@ -645,18 +648,17 @@ class Explorer
 {
     public static string DetermineNetwork(IList<Tx> listOfTxs)
     {
-        IList<Network> listOfNetworks = Network.AllNetworks();
+        List<Network> listOfNetworks = Network.AllNetworks();
 
         string lastNetwork = "";
 
-        //while? there still is a second variant(network)
         for (int i = 0; i < 3; i++)
         {
             Tx tx = listOfTxs.ElementAt(i);
 
-            for (int j = 0; j < listOfNetworks.Count(); j++)
+            for (int j = 0; j < listOfNetworks.Count();)
             {
-                Network network = listOfNetworks.First(x => x.Name == "Polygon");
+                Network network = listOfNetworks.ElementAt(j);
 
                 string status = "";
                 using (HttpClient httpClient = new())
@@ -666,16 +668,14 @@ class Explorer
 
                 if (status == "")
                 {
-                    listOfNetworks = listOfNetworks.Where(x => x.Name != network.Name).ToList<Network>();
+                    listOfNetworks.RemoveAll(x => x.Name == network.Name);
                 }
                 else if (status == "1" || status == "0")
                 {
                     lastNetwork = network.Name;
+                    break;
                 }
             }
-
-            if (listOfNetworks.Count() < 2)
-                break;
         }
 
         return lastNetwork;
