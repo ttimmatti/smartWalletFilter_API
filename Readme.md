@@ -1,6 +1,7 @@
 #smart wallet filter
 
 it's an api that i've created for my other project to filter smart wallets from a Transaction list
+
 smart wallet - definition used to classify users who bought before the pump and etc. (made a smart move :) )
 
 ip:port/upload?balance=<balance>&txs=<txs>&minswap=<minswap>&token=<token address>&buyonly=<bool>
