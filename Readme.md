@@ -4,6 +4,7 @@ it's an api that i've created for my other project to filter smart wallets from 
 
 smart wallet - definition used to classify users who bought before the pump and etc. (made a smart move :) )
 
+i am currently hosting it on my server
 request looks like so, request method POST
 ip:port/upload?balance=<balance>&txs=<txs>&minswap=<minswap>&token=<token address>&buyonly=<bool>
 
