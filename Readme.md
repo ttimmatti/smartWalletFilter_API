@@ -5,8 +5,8 @@ it's an api that i've created for my other project to filter smart wallets from 
 smart wallet - definition used to classify users who bought before the pump and etc. (made a smart move :) )
 
 i am currently hosting it on my server
-request looks like so, request method POST
-ip:port/upload?balance=<balance>&txs=<txs>&minswap=<minswap>&token=<token address>&buyonly=<bool>
+  request looks like so, request method POST
+  ip:port/upload?balance=<balance>&txs=<txs>&minswap=<minswap>&token=<token address>&buyonly=<bool>
 
 it accepts a csv file that represents a list of txs on one of the supported chains (eth, polygon, bsc, arbitrum, optimism) and a set of parameters,
   such as balance(minimal balance sum on 5 chains for a wallet to classify as a "smart wallet"), txs(minimal number of txs in the last week, that a wallet is still active),
